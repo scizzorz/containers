@@ -1,2 +1,2 @@
 #!/bin/bash
-docker ps -a --format "{{.Names}} {{.Image}} {{.Ports}}"
+docker ps -a --format "{{.Names}}: {{.Image}} {{.Ports}}"
