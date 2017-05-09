@@ -1,3 +1,4 @@
 #!/bin/bash
 docker run --name "$2" --hostname "$2" -dt "$1"
-docker cp ~/.ssh/id_rsa.pub "$2":/home/john/.ssh/authorized_keys
+[ -f ~/.ssh/id_rsa.pub ] && docker cp ~/.ssh/id_rsa.pub "$2":/home/john/.ssh/authorized_keys
+[ -f ~/.proxy.sh ] && docker cp ~/.proxy.sh "$2":/home/john/.proxy.sh
