@@ -1,0 +1,44 @@
+# vim: set ft=dockerfile:
+FROM ubuntu:16.04
+
+# Install basic dev tools
+RUN apt-get update -qq && apt-get install -qq \
+    iputils-ping \
+    git \
+    python \
+    python-pip \
+    python3 \
+    python3-pip \
+    ssh \
+    sudo \
+    tmux \
+    vim \
+    wget \
+    zsh
+
+# Install LLVM + clang
+RUN echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main" >> /etc/apt/sources.list && \
+    wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
+    apt-get update -qq && \
+    apt-get install -qq llvm-3.9 clang-3.9 && \
+    ln -s /usr/bin/clang-3.9 /usr/bin/clang && \
+    ln -s /usr/bin/llvm-config-3.9 /usr/bin/llvm-config
+
+# Add a user and install dotfiles
+RUN useradd --create-home john -G sudo && \
+    echo "john:rootpw" | chpasswd && \
+    chsh -s $(which zsh) john && \
+    cd /home/john && \
+    git clone https://scizzorz@github.com/scizzorz/dots.git && \
+    chown -R john:john dots && \
+    cd dots && \
+    su john -c './install.sh' && \
+    sed -i s/magenta/cyan/ /home/john/.zshrc && \
+    cd .. && \
+    mkdir .ssh     && touch .ssh/authorized_keys && \
+    chmod 700 .ssh && chmod 644 .ssh/authorized_keys && \
+    chown -R john:john .ssh
+
+# Start sshd
+ENTRYPOINT service ssh restart && zsh
