@@ -17,13 +17,13 @@ RUN apt-get update -qq && apt-get install -qq \
     zsh
 
 # Install LLVM + clang
-RUN echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main" >> /etc/apt/sources.list && \
-    echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-3.9 main" >> /etc/apt/sources.list && \
+RUN echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-4.0 main" >> /etc/apt/sources.list && \
+    echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-4.0 main" >> /etc/apt/sources.list && \
     wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     apt-get update -qq && \
-    apt-get install -qq llvm-3.9 clang-3.9 && \
-    ln -s /usr/bin/clang-3.9 /usr/bin/clang && \
-    ln -s /usr/bin/llvm-config-3.9 /usr/bin/llvm-config
+    apt-get install -qq llvm-4.0 clang-4.0 && \
+    ln -s /usr/bin/clang-4.0 /usr/bin/clang && \
+    ln -s /usr/bin/llvm-config-4.0 /usr/bin/llvm-config
 
 # Add a user and install dotfiles
 RUN useradd --create-home john -G sudo && \
