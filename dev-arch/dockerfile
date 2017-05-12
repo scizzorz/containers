@@ -1,0 +1,52 @@
+# vim: set ft=dockerfile:
+FROM base/archlinux
+
+RUN pacman-key --populate && \
+    pacman-key --refresh-keys && \
+    pacman -Sy --noprogressbar --noconfirm && \
+    pacman -S --noprogressbar --noconfirm sed && \
+    curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=6&use_mirror_status=on" && \
+    sed -i 's/^#//' /etc/pacman.d/mirrorlist && \
+    pacman -Sy --noprogressbar --noconfirm archlinux-keyring && \
+    pacman -S --noprogressbar --noconfirm --force openssl && \
+    pacman -S --noprogressbar --noconfirm pacman && \
+    pacman-db-upgrade && \
+    echo "[multilib]" >> /etc/pacman.conf && \
+    echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf && \
+    pacman -Syyu --noprogressbar --noconfirm && \
+    pacman -S --noprogressbar --noconfirm \
+            base-devel \
+            clang \
+            git \
+            llvm \
+            llvm-libs \
+            openssh \
+            python \
+            python-pip \
+            python2 \
+            python2-pip \
+            tmux \
+            vim \
+            wget \
+            zsh
+
+RUN systemctl enable sshd
+
+# Add a user and install dotfiles
+RUN groupadd sudo && \
+    echo "%sudo ALL=(ALL) ALL" >> /etc/sudoers && \
+    useradd --create-home john -G sudo && \
+    echo "john:rootpw" | chpasswd && \
+    chsh -s $(which zsh) john && \
+    cd /home/john && \
+    git clone https://scizzorz@github.com/scizzorz/dots.git && \
+    chown -R john:john dots && \
+    cd dots && \
+    su john -c './install.sh' && \
+    sed -i s/magenta/cyan/ /home/john/.zshrc && \
+    cd .. && \
+    mkdir .ssh     && touch .ssh/authorized_keys && \
+    chmod 700 .ssh && chmod 644 .ssh/authorized_keys && \
+    chown -R john:john .ssh
+
+ENTRYPOINT /usr/bin/ssh-keygen -A && /usr/bin/sshd -D
