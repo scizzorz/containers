@@ -1,6 +1,9 @@
 #!/bin/bash
 docker run --name "$2" --hostname "$2" -dt "$1"
 
+target=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$2")
+sed -i "/$target/d" ~/.ssh/known_hosts
+
 if [ -f ~/.ssh/id_rsa ]; then
   docker cp ~/.ssh/id_rsa "$2":/home/john/.ssh/id_rsa
   docker exec -it "$2" chown john:john /home/john/.ssh/id_rsa
