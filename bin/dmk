@@ -1,21 +1,24 @@
 #!/bin/bash
-docker run --name "$2" --hostname "$2" -dt "$1"
+image="$1"
+name="$2"
+shift 2
+docker run --name "$name" --hostname "$name" "$@" -dt "$image"
 
-target=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$2")
+target=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$name")
 sed -i "/$target/d" ~/.ssh/known_hosts
 
 if [ -f ~/.ssh/id_rsa ]; then
-  docker cp ~/.ssh/id_rsa "$2":/home/john/.ssh/id_rsa
-  docker exec -it "$2" chown john:john /home/john/.ssh/id_rsa
+  docker cp ~/.ssh/id_rsa "$name":/home/john/.ssh/id_rsa
+  docker exec -it "$name" chown john:john /home/john/.ssh/id_rsa
 fi
 
 if [ -f ~/.ssh/id_rsa.pub ]; then
-  docker cp ~/.ssh/id_rsa.pub "$2":/home/john/.ssh/authorized_keys
-  docker cp ~/.ssh/id_rsa.pub "$2":/home/john/.ssh/id_rsa.pub
-  docker exec -it "$2" chown john:john /home/john/.ssh/{id_rsa.pub,authorized_keys}
+  docker cp ~/.ssh/id_rsa.pub "$name":/home/john/.ssh/authorized_keys
+  docker cp ~/.ssh/id_rsa.pub "$name":/home/john/.ssh/id_rsa.pub
+  docker exec -it "$name" chown john:john /home/john/.ssh/{id_rsa.pub,authorized_keys}
 fi
 
 if [ -f ~/.proxy.sh ]; then
-  docker cp ~/.proxy.sh "$2":/home/john/.proxy.sh
-  docker exec -it "$2" chown john:john /home/john/.proxy.sh
+  docker cp ~/.proxy.sh "$name":/home/john/.proxy.sh
+  docker exec -it "$name" chown john:john /home/john/.proxy.sh
 fi
