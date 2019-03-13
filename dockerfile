@@ -1,8 +1,7 @@
 # vim: set ft=dockerfile:
-FROM base/archlinux
+FROM archlinux/base
 
-RUN pacman-key --populate && \
-    pacman-key --refresh-keys && \
+RUN \
     pacman -Sy --noprogressbar --noconfirm && \
     pacman -S --noprogressbar --noconfirm sed && \
     curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=6&use_mirror_status=on" && \
@@ -13,40 +12,45 @@ RUN pacman-key --populate && \
     pacman-db-upgrade && \
     echo "[multilib]" >> /etc/pacman.conf && \
     echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf && \
-    pacman -Syyu --noprogressbar --noconfirm && \
+    pacman -Syyu --noprogressbar --noconfirm
+
+RUN \
     pacman -S --noprogressbar --noconfirm \
             base-devel \
-            clang \
+            bat \
+            exa \
+            fd \
             git \
-            llvm \
-            llvm-libs \
             openssh \
+            httpie \
+            rustup \
             python \
             python-pip \
-            python2 \
-            python2-pip \
+            ripgrep \
             tmux \
             vim \
             wget \
-            zsh
-
-RUN systemctl enable sshd
+            zsh \
+ && rustup default stable
 
 # Add a user and install dotfiles
-RUN groupadd sudo && \
+RUN \
+    groupadd sudo && \
     echo "%sudo ALL=(ALL) ALL" >> /etc/sudoers && \
     useradd --create-home john -G sudo && \
     echo "john:rootpw" | chpasswd && \
     chsh -s $(which zsh) john && \
     cd /home/john && \
-    git clone https://scizzorz@github.com/scizzorz/dots.git && \
+    git clone https://github.com/scizzorz/dots.git && \
     chown -R john:john dots && \
     cd dots && \
     su john -c './install.sh' && \
-    sed -i s/magenta/cyan/ /home/john/.zshrc && \
     cd .. && \
-    mkdir .ssh     && touch .ssh/authorized_keys && \
-    chmod 700 .ssh && chmod 644 .ssh/authorized_keys && \
-    chown -R john:john .ssh
+    mkdir .ssh && \
+    chown john:john .ssh && \
+    chmod 700 .ssh
 
-ENTRYPOINT /usr/bin/ssh-keygen -A && /usr/bin/sshd -D
+VOLUME /home/john/dev
+WORKDIR /home/john
+USER john
+CMD ["/usr/bin/zsh"]

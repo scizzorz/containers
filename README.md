@@ -1,2 +1,3 @@
 # containers
-A bunch of Docker containers used for personal development.
+
+A (bunch of?) Docker container(s) used for personal development.
