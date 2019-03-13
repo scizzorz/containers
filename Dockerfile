@@ -30,8 +30,7 @@ RUN \
             tmux \
             vim \
             wget \
-            zsh \
- && rustup default stable
+            zsh
 
 # Add a user and install dotfiles
 RUN \
@@ -50,7 +49,9 @@ RUN \
  && chown john:john .ssh \
  && chmod 700 .ssh
 
+USER john
+RUN rustup default stable
+
 VOLUME /home/john/dev
 WORKDIR /home/john
-USER john
 CMD ["/usr/bin/zsh"]
