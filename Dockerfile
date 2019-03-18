@@ -52,6 +52,10 @@ RUN \
 USER john
 RUN rustup default stable
 
+COPY entry.sh /entry.sh
+ENTRYPOINT ["/entry.sh"]
+
+USER root
 VOLUME /home/john/dev
 WORKDIR /home/john
 CMD ["/usr/bin/zsh"]
