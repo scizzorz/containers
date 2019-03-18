@@ -21,12 +21,13 @@ RUN \
             exa \
             fd \
             git \
-            openssh \
             httpie \
-            rustup \
+            iputils \
+            openssh \
             python \
             python-pip \
             ripgrep \
+            rustup \
             tmux \
             vim \
             wget \
