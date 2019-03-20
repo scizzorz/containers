@@ -16,22 +16,27 @@ RUN \
 
 RUN \
     pacman -S --noprogressbar --noconfirm \
-            base-devel \
-            bat \
-            exa \
-            fd \
-            git \
-            httpie \
-            iputils \
-            openssh \
-            python \
-            python-pip \
-            ripgrep \
-            rustup \
-            tmux \
-            vim \
-            wget \
-            zsh
+           base-devel \
+           bat \
+           cmake \
+           exa \
+           fd \
+           git \
+           httpie \
+           iputils \
+           openssh \
+           python \
+           python-pip \
+           ripgrep \
+           rustup \
+           tmux \
+           vim \
+           wget \
+           zsh \
+ && pip install \
+        pipenv \
+        flake8 \
+        pylint
 
 # Add a user and install dotfiles
 RUN \
@@ -41,22 +46,20 @@ RUN \
  && echo "john:rootpw" | chpasswd \
  && chsh -s $(which zsh) john \
  && cd /home/john \
+ && su john -c 'rustup default stable' \
  && git clone https://github.com/scizzorz/dots.git \
  && chown -R john:john dots \
  && cd dots \
  && su john -c './install.sh' \
+ && su john -c 'python vim/bundle/youcompleteme/install.py --clang-completer --rust-completer' \
  && cd .. \
  && mkdir .ssh \
  && chown john:john .ssh \
  && chmod 700 .ssh
 
-USER john
-RUN rustup default stable
-
 COPY entry.sh /entry.sh
 ENTRYPOINT ["/entry.sh"]
 
-USER root
 VOLUME /home/john/dev
 WORKDIR /home/john
 CMD ["/usr/bin/zsh"]
