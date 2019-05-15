@@ -29,6 +29,7 @@ RUN \
            python-pip \
            ripgrep \
            rustup \
+           skim \
            tmux \
            vim \
            wget \
