@@ -49,6 +49,7 @@ RUN \
  && chsh -s $(which zsh) john \
  && cd /home/john \
  && su john -c 'rustup default stable' \
+ && su john -c 'rustup component add rustfmt clippy' \
  && git clone https://github.com/scizzorz/dots.git \
  && chown -R john:john dots \
  && cd dots \
