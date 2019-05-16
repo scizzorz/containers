@@ -30,6 +30,7 @@ RUN \
            ripgrep \
            rustup \
            skim \
+           thefuck \
            tmux \
            tokei \
            vim \
