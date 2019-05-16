@@ -31,6 +31,7 @@ RUN \
            rustup \
            skim \
            tmux \
+           tokei \
            vim \
            wget \
            zsh \
