@@ -19,6 +19,7 @@ RUN \
            base-devel \
            bat \
            cmake \
+           docker \
            exa \
            fd \
            git \
